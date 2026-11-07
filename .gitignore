@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Newman reports
+Reports/
+
+# Environment secrets
+.env
+
+# Postman app local workspace files
+.postman/
+postman/

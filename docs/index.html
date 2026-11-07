@@ -1,0 +1,1045 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>dMoney API Documentation</title>
+<style>
+:root{--bg:#fff;--fg:#1d2330;--mut:#5b6474;--card:#f6f7f9;--line:#e3e6eb;--acc:#0b6bcb}
+@media (prefers-color-scheme:dark){:root{--bg:#14171c;--fg:#e6e8ec;--mut:#9aa3b2;--card:#1d2128;--line:#2c313a;--acc:#5aa9ff}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.55 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg)}
+.wrap{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+nav{border-right:1px solid var(--line);padding:20px;position:sticky;top:0;height:100vh;overflow:auto}
+nav ul{list-style:none;padding:0;margin:0}nav li{margin:2px 0;font-size:13px}nav li.grp{margin-top:14px;font-weight:600;color:var(--mut);text-transform:uppercase;font-size:11px;letter-spacing:.05em}
+nav a{color:var(--fg);text-decoration:none}nav a:hover{color:var(--acc)}
+main{padding:28px 36px;max-width:1000px}h1{margin:0 0 6px}.sub{color:var(--mut);margin:0 0 24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 18px}
+.card h3{margin:0 0 6px;font-size:17px}h4{margin:14px 0 6px;font-size:13px;color:var(--mut)}
+.m{display:inline-block;font:600 11px ui-monospace,monospace;padding:2px 6px;border-radius:4px;color:#fff;min-width:46px;text-align:center}
+.POST{background:#d97706}.PATCH{background:#7c3aed}.GET{background:#059669}
+table{border-collapse:collapse;width:100%;font-size:13px}td{border-top:1px solid var(--line);padding:5px 8px;vertical-align:top}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto;font-size:12.5px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}.url code{word-break:break-all}
+summary{cursor:pointer;color:var(--acc);margin-top:10px}
+@media (max-width:800px){.wrap{grid-template-columns:1fr}nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:20px 16px}}
+</style></head><body><div class="wrap"><nav><strong>dMoney API</strong><ul><li class="grp">01 - Admin Login</li><li><a href="#TC01"><span class="m POST">POST</span> TC01 - Admin login with wrong password (negative)</a></li><li><a href="#TC02"><span class="m POST">POST</span> TC02 - Admin login successfully</a></li><li class="grp">02 - Create Users</li><li><a href="#TC03"><span class="m POST">POST</span> TC03 - Create user without secret key (negative)</a></li><li><a href="#TC04"><span class="m POST">POST</span> TC04 - Create user with invalid role (negative)</a></li><li><a href="#TC05"><span class="m POST">POST</span> TC05 - Create Customer 1</a></li><li><a href="#TC06"><span class="m POST">POST</span> TC06 - Create Customer 2</a></li><li><a href="#TC07"><span class="m POST">POST</span> TC07 - Create Agent</a></li><li><a href="#TC08"><span class="m POST">POST</span> TC08 - Create Merchant</a></li><li class="grp">03 - Activate Users (Admin)</li><li><a href="#TC09"><span class="m PATCH">PATCH</span> TC09 - Activate Customer 1</a></li><li><a href="#TC10"><span class="m PATCH">PATCH</span> TC10 - Activate Customer 2</a></li><li><a href="#TC11"><span class="m PATCH">PATCH</span> TC11 - Activate Agent</a></li><li><a href="#TC12"><span class="m PATCH">PATCH</span> TC12 - Activate Merchant</a></li><li class="grp">04 - Login (System, Agent, Customers)</li><li><a href="#TC13"><span class="m POST">POST</span> TC13 - System account login</a></li><li><a href="#TC14"><span class="m POST">POST</span> TC14 - Agent login (OTP sent)</a></li><li><a href="#TC15"><span class="m POST">POST</span> TC15 - Agent verify with wrong OTP (negative)</a></li><li><a href="#TC16"><span class="m POST">POST</span> TC16 - Agent verify OTP</a></li><li><a href="#TC17"><span class="m POST">POST</span> TC17 - Customer 1 login (OTP sent)</a></li><li><a href="#TC18"><span class="m POST">POST</span> TC18 - Customer 1 verify OTP</a></li><li><a href="#TC19"><span class="m POST">POST</span> TC19 - Customer 2 login (OTP sent)</a></li><li><a href="#TC20"><span class="m POST">POST</span> TC20 - Customer 2 verify OTP</a></li><li class="grp">05 - Transactions</li><li><a href="#TC21"><span class="m POST">POST</span> TC21 - System deposit to a Customer (negative)</a></li><li><a href="#TC22"><span class="m POST">POST</span> TC22 - System deposits 5000 tk to Agent</a></li><li><a href="#TC23"><span class="m POST">POST</span> TC23 - Agent deposit below minimum amount (negative)</a></li><li><a href="#TC24"><span class="m POST">POST</span> TC24 - Agent deposits 2000 tk to Customer 1 (assert commission)</a></li><li><a href="#TC25"><span class="m POST">POST</span> TC25 - Customer sends money to own account (negative)</a></li><li><a href="#TC26"><span class="m POST">POST</span> TC26 - Customer 1 sends 1000 tk to Customer 2 (assert fee)</a></li><li><a href="#TC27"><span class="m POST">POST</span> TC27 - Customer cash out below minimum amount (negative)</a></li><li><a href="#TC28"><span class="m POST">POST</span> TC28 - Customer 2 cashes out 500 tk from Agent (assert fee)</a></li><li><a href="#TC29"><span class="m POST">POST</span> TC29 - Customer pays to a non-merchant account (negative)</a></li><li><a href="#TC30"><span class="m POST">POST</span> TC30 - Customer 2 pays 400 tk to Merchant (assert fee)</a></li></ul></nav><main>
+<h1>dMoney API Documentation</h1>
+<p class="sub">Road to SDET Batch 20 - Integration testing with Postman. Base URL: <code>http://localhost:5000</code>. Generated from the Postman collection.</p>
+<section class="card"><h3>Overview</h3><p>Road to SDET - Batch 20 - API testing assignment.<br><br>End-to-end flow: create 2 customers, 1 agent and 1 merchant; activate them with admin; SYSTEM deposits 5000 tk to agent; agent deposits 2000 tk to customer 1 (commission asserted); customer 1 sends 1000 tk to customer 2 (fee asserted); customer 2 cashes out 500 tk (fee asserted); customer 2 pays 400 tk to merchant (fee asserted).<br><br>Each negative test runs before its positive test so a failure cannot break the chain.</p>
+<h4>Authentication</h4><p>Protected endpoints need <code>Authorization: Bearer &lt;token&gt;</code> and <code>X-AUTH-SECRET-KEY: {{partnerKey}}</code>. Admin and SYSTEM receive a token from <code>/user/login</code>; Customer, Agent and Merchant receive a token from <code>/user/verify-otp</code> after login.</p>
+<h4>Fee rules asserted</h4><table><tr><td>Agent deposit commission</td><td>2.5% of amount</td></tr><tr><td>Send money fee</td><td>flat 5 tk</td></tr><tr><td>Cash out fee</td><td>1% of amount, minimum 5 tk</td></tr><tr><td>Payment fee</td><td>1% of amount, minimum 5 tk</td></tr></table>
+<h4>Collection variables</h4><table><tr><td>baseUrl</td><td><code>http://localhost:5000</code></td></tr><tr><td>partnerKey</td><td><code>ROADTOSDET</code></td></tr><tr><td>adminEmail</td><td><code>admin@dmoney.com</code></td></tr><tr><td>adminPassword</td><td><code>****</code></td></tr><tr><td>systemEmail</td><td><code>system@dmoney.com</code></td></tr><tr><td>systemPassword</td><td><code>****</code></td></tr><tr><td>userPassword</td><td><code>****</code></td></tr><tr><td>defaultOtp</td><td><code>0000</code></td></tr><tr><td>userCounter</td><td><code>17</code></td></tr><tr><td>lastNid</td><td><code>123456789029</code></td></tr><tr><td>adminAccessToken</td><td><code></code></td></tr><tr><td>systemToken</td><td><code></code></td></tr><tr><td>customer1Id</td><td><code></code></td></tr><tr><td>customer1Phone</td><td><code></code></td></tr><tr><td>customer1Email</td><td><code></code></td></tr><tr><td>customer1Token</td><td><code></code></td></tr><tr><td>customer2Id</td><td><code></code></td></tr><tr><td>customer2Phone</td><td><code></code></td></tr><tr><td>customer2Email</td><td><code></code></td></tr><tr><td>customer2Token</td><td><code></code></td></tr><tr><td>agentId</td><td><code></code></td></tr><tr><td>agentPhone</td><td><code></code></td></tr><tr><td>agentEmail</td><td><code></code></td></tr><tr><td>agentToken</td><td><code></code></td></tr><tr><td>merchantId</td><td><code></code></td></tr><tr><td>merchantPhone</td><td><code></code></td></tr><tr><td>merchantEmail</td><td><code></code></td></tr><tr><td>merchantToken</td><td><code></code></td></tr></table></section>
+<section id="TC01" class="card">
+<h3><span class="m POST">POST</span> TC01 - Admin login with wrong password (negative)</h3>
+<p class="url"><code>{{baseUrl}}/user/login</code></p>
+<p>Negative: login must fail when the password is wrong.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;email&quot;: &quot;{{adminEmail}}&quot;,
+    &quot;password&quot;: &quot;wrong_pass&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 401&quot;, function () {
+    pm.response.to.have.status(401);
+});
+pm.test(&quot;Message is &#x27;Password incorrect&#x27;&quot;, function () {
+    pm.expect(pm.response.json().message).to.eql(&quot;Password incorrect&quot;);
+});
+pm.test(&quot;No token is returned&quot;, function () {
+    pm.expect(pm.response.json().token).to.be.undefined;
+});</pre></details>
+</section><section id="TC02" class="card">
+<h3><span class="m POST">POST</span> TC02 - Admin login successfully</h3>
+<p class="url"><code>{{baseUrl}}/user/login</code></p>
+<p>Admin gets a JWT token directly (no OTP). Token is saved as adminAccessToken.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;email&quot;: &quot;{{adminEmail}}&quot;,
+    &quot;password&quot;: &quot;{{adminPassword}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Message is &#x27;Login successful&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Login successful&quot;);
+});
+pm.test(&quot;Role is Admin and token exists&quot;, function () {
+    pm.expect(jsonData.role).to.eql(&quot;Admin&quot;);
+    pm.expect(jsonData.token).to.exist;
+});
+
+// Save admin token for the next requests
+if (jsonData.token) {
+    pm.collectionVariables.set(&quot;adminAccessToken&quot;, jsonData.token);
+}</pre></details>
+</section><section id="TC03" class="card">
+<h3><span class="m POST">POST</span> TC03 - Create user without secret key (negative)</h3>
+<p class="url"><code>{{baseUrl}}/user/create</code></p>
+<p>Negative: the X-AUTH-SECRET-KEY header is missing, so the API must reject it.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;name&quot;: &quot;{{randomUsername}}&quot;,
+    &quot;email&quot;: &quot;{{randomEmail}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;,
+    &quot;phone_number&quot;: &quot;{{randomPhone}}&quot;,
+    &quot;nid&quot;: &quot;{{randomNid}}&quot;,
+    &quot;role&quot;: &quot;Customer&quot;
+}</pre>
+<details><summary>Pre-request script (random user data)</summary><pre>const firstNames = [
+    &quot;Sharif&quot;, &quot;Rahim&quot;, &quot;Karim&quot;, &quot;Sakib&quot;,
+    &quot;Nabil&quot;, &quot;Hasan&quot;, &quot;Imran&quot;, &quot;Rakib&quot;,
+    &quot;Tanvir&quot;, &quot;Fahim&quot;, &quot;Arif&quot;, &quot;Nayeem&quot;,
+    &quot;Sabbir&quot;, &quot;Riyad&quot;, &quot;Faisal&quot;, &quot;Mahin&quot;,
+    &quot;Rafi&quot;, &quot;Adnan&quot;, &quot;Shuvo&quot;, &quot;Tamim&quot;,
+    &quot;Nusrat&quot;, &quot;Ayesha&quot;, &quot;Mim&quot;, &quot;Sumaiya&quot;
+];
+
+// Sequential username counter
+let counter = Number(
+    pm.collectionVariables.get(&quot;userCounter&quot;) || 0
+);
+
+counter++;
+
+pm.collectionVariables.set(&quot;userCounter&quot;, counter);
+
+// Random first name
+const firstName = firstNames[
+    Math.floor(Math.random() * firstNames.length)
+];
+
+// Username and email
+const username = firstName + counter;
+const email = username.toLowerCase() + &quot;@gmail.com&quot;;
+
+// Random phone starting with 018
+const phone = &quot;018&quot; +
+    Math.floor(10000000 + Math.random() * 90000000);
+
+// Sequential NID
+let lastNid = pm.collectionVariables.get(&quot;lastNid&quot;)
+    || &quot;123456789013&quot;;
+
+const nid = (BigInt(lastNid) + 1n).toString();
+
+pm.collectionVariables.set(&quot;lastNid&quot;, nid);
+
+// Set request variables
+pm.variables.set(&quot;randomUsername&quot;, username);
+pm.variables.set(&quot;randomEmail&quot;, email);
+pm.variables.set(&quot;randomPhone&quot;, phone);
+pm.variables.set(&quot;randomNid&quot;, nid);
+
+console.log(&quot;Username:&quot;, username);
+console.log(&quot;Email:&quot;, email);
+console.log(&quot;Phone:&quot;, phone);
+console.log(&quot;NID:&quot;, nid);</pre></details>
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 401&quot;, function () {
+    pm.response.to.have.status(401);
+});
+pm.test(&quot;Message is &#x27;Secret auth key validation failure!&#x27;&quot;, function () {
+    pm.expect(pm.response.json().message).to.eql(&quot;Secret auth key validation failure!&quot;);
+});</pre></details>
+</section><section id="TC04" class="card">
+<h3><span class="m POST">POST</span> TC04 - Create user with invalid role (negative)</h3>
+<p class="url"><code>{{baseUrl}}/user/create</code></p>
+<p>Negative: role &#x27;SuperUser&#x27; does not exist in the Role table.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;name&quot;: &quot;{{randomUsername}}&quot;,
+    &quot;email&quot;: &quot;{{randomEmail}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;,
+    &quot;phone_number&quot;: &quot;{{randomPhone}}&quot;,
+    &quot;nid&quot;: &quot;{{randomNid}}&quot;,
+    &quot;role&quot;: &quot;SuperUser&quot;
+}</pre>
+<details><summary>Pre-request script (random user data)</summary><pre>const firstNames = [
+    &quot;Sharif&quot;, &quot;Rahim&quot;, &quot;Karim&quot;, &quot;Sakib&quot;,
+    &quot;Nabil&quot;, &quot;Hasan&quot;, &quot;Imran&quot;, &quot;Rakib&quot;,
+    &quot;Tanvir&quot;, &quot;Fahim&quot;, &quot;Arif&quot;, &quot;Nayeem&quot;,
+    &quot;Sabbir&quot;, &quot;Riyad&quot;, &quot;Faisal&quot;, &quot;Mahin&quot;,
+    &quot;Rafi&quot;, &quot;Adnan&quot;, &quot;Shuvo&quot;, &quot;Tamim&quot;,
+    &quot;Nusrat&quot;, &quot;Ayesha&quot;, &quot;Mim&quot;, &quot;Sumaiya&quot;
+];
+
+// Sequential username counter
+let counter = Number(
+    pm.collectionVariables.get(&quot;userCounter&quot;) || 0
+);
+
+counter++;
+
+pm.collectionVariables.set(&quot;userCounter&quot;, counter);
+
+// Random first name
+const firstName = firstNames[
+    Math.floor(Math.random() * firstNames.length)
+];
+
+// Username and email
+const username = firstName + counter;
+const email = username.toLowerCase() + &quot;@gmail.com&quot;;
+
+// Random phone starting with 018
+const phone = &quot;018&quot; +
+    Math.floor(10000000 + Math.random() * 90000000);
+
+// Sequential NID
+let lastNid = pm.collectionVariables.get(&quot;lastNid&quot;)
+    || &quot;123456789013&quot;;
+
+const nid = (BigInt(lastNid) + 1n).toString();
+
+pm.collectionVariables.set(&quot;lastNid&quot;, nid);
+
+// Set request variables
+pm.variables.set(&quot;randomUsername&quot;, username);
+pm.variables.set(&quot;randomEmail&quot;, email);
+pm.variables.set(&quot;randomPhone&quot;, phone);
+pm.variables.set(&quot;randomNid&quot;, nid);
+
+console.log(&quot;Username:&quot;, username);
+console.log(&quot;Email:&quot;, email);
+console.log(&quot;Phone:&quot;, phone);
+console.log(&quot;NID:&quot;, nid);</pre></details>
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 400&quot;, function () {
+    pm.response.to.have.status(400);
+});
+pm.test(&quot;Message says the role is invalid&quot;, function () {
+    pm.expect(pm.response.json().message).to.include(&quot;Invalid role: SuperUser&quot;);
+});</pre></details>
+</section><section id="TC05" class="card">
+<h3><span class="m POST">POST</span> TC05 - Create Customer 1</h3>
+<p class="url"><code>{{baseUrl}}/user/create</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;name&quot;: &quot;{{randomUsername}}&quot;,
+    &quot;email&quot;: &quot;{{randomEmail}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;,
+    &quot;phone_number&quot;: &quot;{{randomPhone}}&quot;,
+    &quot;nid&quot;: &quot;{{randomNid}}&quot;,
+    &quot;role&quot;: &quot;Customer&quot;
+}</pre>
+<details><summary>Pre-request script (random user data)</summary><pre>const firstNames = [
+    &quot;Sharif&quot;, &quot;Rahim&quot;, &quot;Karim&quot;, &quot;Sakib&quot;,
+    &quot;Nabil&quot;, &quot;Hasan&quot;, &quot;Imran&quot;, &quot;Rakib&quot;,
+    &quot;Tanvir&quot;, &quot;Fahim&quot;, &quot;Arif&quot;, &quot;Nayeem&quot;,
+    &quot;Sabbir&quot;, &quot;Riyad&quot;, &quot;Faisal&quot;, &quot;Mahin&quot;,
+    &quot;Rafi&quot;, &quot;Adnan&quot;, &quot;Shuvo&quot;, &quot;Tamim&quot;,
+    &quot;Nusrat&quot;, &quot;Ayesha&quot;, &quot;Mim&quot;, &quot;Sumaiya&quot;
+];
+
+// Sequential username counter
+let counter = Number(
+    pm.collectionVariables.get(&quot;userCounter&quot;) || 0
+);
+
+counter++;
+
+pm.collectionVariables.set(&quot;userCounter&quot;, counter);
+
+// Random first name
+const firstName = firstNames[
+    Math.floor(Math.random() * firstNames.length)
+];
+
+// Username and email
+const username = firstName + counter;
+const email = username.toLowerCase() + &quot;@gmail.com&quot;;
+
+// Random phone starting with 018
+const phone = &quot;018&quot; +
+    Math.floor(10000000 + Math.random() * 90000000);
+
+// Sequential NID
+let lastNid = pm.collectionVariables.get(&quot;lastNid&quot;)
+    || &quot;123456789013&quot;;
+
+const nid = (BigInt(lastNid) + 1n).toString();
+
+pm.collectionVariables.set(&quot;lastNid&quot;, nid);
+
+// Set request variables
+pm.variables.set(&quot;randomUsername&quot;, username);
+pm.variables.set(&quot;randomEmail&quot;, email);
+pm.variables.set(&quot;randomPhone&quot;, phone);
+pm.variables.set(&quot;randomNid&quot;, nid);
+
+console.log(&quot;Username:&quot;, username);
+console.log(&quot;Email:&quot;, email);
+console.log(&quot;Phone:&quot;, phone);
+console.log(&quot;NID:&quot;, nid);</pre></details>
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;User created&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User created&quot;);
+});
+pm.test(&quot;Role is Customer&quot;, function () {
+    pm.expect(jsonData.user.role).to.eql(&quot;Customer&quot;);
+});
+pm.test(&quot;Phone and email match the request&quot;, function () {
+    pm.expect(jsonData.user.phone_number).to.eql(pm.variables.get(&quot;randomPhone&quot;));
+    pm.expect(jsonData.user.email).to.eql(pm.variables.get(&quot;randomEmail&quot;));
+});
+pm.test(&quot;Password is not returned&quot;, function () {
+    pm.expect(jsonData.user.password).to.be.undefined;
+});
+
+// Save this user&#x27;s data for the next requests
+if (jsonData.user) {
+    pm.collectionVariables.set(&quot;customer1Id&quot;, jsonData.user.id);
+    pm.collectionVariables.set(&quot;customer1Phone&quot;, jsonData.user.phone_number);
+    pm.collectionVariables.set(&quot;customer1Email&quot;, jsonData.user.email);
+    console.log(&quot;Customer saved:&quot;, jsonData.user.id, jsonData.user.phone_number);
+}</pre></details>
+</section><section id="TC06" class="card">
+<h3><span class="m POST">POST</span> TC06 - Create Customer 2</h3>
+<p class="url"><code>{{baseUrl}}/user/create</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;name&quot;: &quot;{{randomUsername}}&quot;,
+    &quot;email&quot;: &quot;{{randomEmail}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;,
+    &quot;phone_number&quot;: &quot;{{randomPhone}}&quot;,
+    &quot;nid&quot;: &quot;{{randomNid}}&quot;,
+    &quot;role&quot;: &quot;Customer&quot;
+}</pre>
+<details><summary>Pre-request script (random user data)</summary><pre>const firstNames = [
+    &quot;Sharif&quot;, &quot;Rahim&quot;, &quot;Karim&quot;, &quot;Sakib&quot;,
+    &quot;Nabil&quot;, &quot;Hasan&quot;, &quot;Imran&quot;, &quot;Rakib&quot;,
+    &quot;Tanvir&quot;, &quot;Fahim&quot;, &quot;Arif&quot;, &quot;Nayeem&quot;,
+    &quot;Sabbir&quot;, &quot;Riyad&quot;, &quot;Faisal&quot;, &quot;Mahin&quot;,
+    &quot;Rafi&quot;, &quot;Adnan&quot;, &quot;Shuvo&quot;, &quot;Tamim&quot;,
+    &quot;Nusrat&quot;, &quot;Ayesha&quot;, &quot;Mim&quot;, &quot;Sumaiya&quot;
+];
+
+// Sequential username counter
+let counter = Number(
+    pm.collectionVariables.get(&quot;userCounter&quot;) || 0
+);
+
+counter++;
+
+pm.collectionVariables.set(&quot;userCounter&quot;, counter);
+
+// Random first name
+const firstName = firstNames[
+    Math.floor(Math.random() * firstNames.length)
+];
+
+// Username and email
+const username = firstName + counter;
+const email = username.toLowerCase() + &quot;@gmail.com&quot;;
+
+// Random phone starting with 018
+const phone = &quot;018&quot; +
+    Math.floor(10000000 + Math.random() * 90000000);
+
+// Sequential NID
+let lastNid = pm.collectionVariables.get(&quot;lastNid&quot;)
+    || &quot;123456789013&quot;;
+
+const nid = (BigInt(lastNid) + 1n).toString();
+
+pm.collectionVariables.set(&quot;lastNid&quot;, nid);
+
+// Set request variables
+pm.variables.set(&quot;randomUsername&quot;, username);
+pm.variables.set(&quot;randomEmail&quot;, email);
+pm.variables.set(&quot;randomPhone&quot;, phone);
+pm.variables.set(&quot;randomNid&quot;, nid);
+
+console.log(&quot;Username:&quot;, username);
+console.log(&quot;Email:&quot;, email);
+console.log(&quot;Phone:&quot;, phone);
+console.log(&quot;NID:&quot;, nid);</pre></details>
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;User created&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User created&quot;);
+});
+pm.test(&quot;Role is Customer&quot;, function () {
+    pm.expect(jsonData.user.role).to.eql(&quot;Customer&quot;);
+});
+pm.test(&quot;Phone and email match the request&quot;, function () {
+    pm.expect(jsonData.user.phone_number).to.eql(pm.variables.get(&quot;randomPhone&quot;));
+    pm.expect(jsonData.user.email).to.eql(pm.variables.get(&quot;randomEmail&quot;));
+});
+pm.test(&quot;Password is not returned&quot;, function () {
+    pm.expect(jsonData.user.password).to.be.undefined;
+});
+
+// Save this user&#x27;s data for the next requests
+if (jsonData.user) {
+    pm.collectionVariables.set(&quot;customer2Id&quot;, jsonData.user.id);
+    pm.collectionVariables.set(&quot;customer2Phone&quot;, jsonData.user.phone_number);
+    pm.collectionVariables.set(&quot;customer2Email&quot;, jsonData.user.email);
+    console.log(&quot;Customer saved:&quot;, jsonData.user.id, jsonData.user.phone_number);
+}</pre></details>
+</section><section id="TC07" class="card">
+<h3><span class="m POST">POST</span> TC07 - Create Agent</h3>
+<p class="url"><code>{{baseUrl}}/user/create</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;name&quot;: &quot;{{randomUsername}}&quot;,
+    &quot;email&quot;: &quot;{{randomEmail}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;,
+    &quot;phone_number&quot;: &quot;{{randomPhone}}&quot;,
+    &quot;nid&quot;: &quot;{{randomNid}}&quot;,
+    &quot;role&quot;: &quot;Agent&quot;
+}</pre>
+<details><summary>Pre-request script (random user data)</summary><pre>const firstNames = [
+    &quot;Sharif&quot;, &quot;Rahim&quot;, &quot;Karim&quot;, &quot;Sakib&quot;,
+    &quot;Nabil&quot;, &quot;Hasan&quot;, &quot;Imran&quot;, &quot;Rakib&quot;,
+    &quot;Tanvir&quot;, &quot;Fahim&quot;, &quot;Arif&quot;, &quot;Nayeem&quot;,
+    &quot;Sabbir&quot;, &quot;Riyad&quot;, &quot;Faisal&quot;, &quot;Mahin&quot;,
+    &quot;Rafi&quot;, &quot;Adnan&quot;, &quot;Shuvo&quot;, &quot;Tamim&quot;,
+    &quot;Nusrat&quot;, &quot;Ayesha&quot;, &quot;Mim&quot;, &quot;Sumaiya&quot;
+];
+
+// Sequential username counter
+let counter = Number(
+    pm.collectionVariables.get(&quot;userCounter&quot;) || 0
+);
+
+counter++;
+
+pm.collectionVariables.set(&quot;userCounter&quot;, counter);
+
+// Random first name
+const firstName = firstNames[
+    Math.floor(Math.random() * firstNames.length)
+];
+
+// Username and email
+const username = firstName + counter;
+const email = username.toLowerCase() + &quot;@gmail.com&quot;;
+
+// Random phone starting with 018
+const phone = &quot;018&quot; +
+    Math.floor(10000000 + Math.random() * 90000000);
+
+// Sequential NID
+let lastNid = pm.collectionVariables.get(&quot;lastNid&quot;)
+    || &quot;123456789013&quot;;
+
+const nid = (BigInt(lastNid) + 1n).toString();
+
+pm.collectionVariables.set(&quot;lastNid&quot;, nid);
+
+// Set request variables
+pm.variables.set(&quot;randomUsername&quot;, username);
+pm.variables.set(&quot;randomEmail&quot;, email);
+pm.variables.set(&quot;randomPhone&quot;, phone);
+pm.variables.set(&quot;randomNid&quot;, nid);
+
+console.log(&quot;Username:&quot;, username);
+console.log(&quot;Email:&quot;, email);
+console.log(&quot;Phone:&quot;, phone);
+console.log(&quot;NID:&quot;, nid);</pre></details>
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;User created&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User created&quot;);
+});
+pm.test(&quot;Role is Agent&quot;, function () {
+    pm.expect(jsonData.user.role).to.eql(&quot;Agent&quot;);
+});
+pm.test(&quot;Phone and email match the request&quot;, function () {
+    pm.expect(jsonData.user.phone_number).to.eql(pm.variables.get(&quot;randomPhone&quot;));
+    pm.expect(jsonData.user.email).to.eql(pm.variables.get(&quot;randomEmail&quot;));
+});
+pm.test(&quot;Password is not returned&quot;, function () {
+    pm.expect(jsonData.user.password).to.be.undefined;
+});
+
+// Save this user&#x27;s data for the next requests
+if (jsonData.user) {
+    pm.collectionVariables.set(&quot;agentId&quot;, jsonData.user.id);
+    pm.collectionVariables.set(&quot;agentPhone&quot;, jsonData.user.phone_number);
+    pm.collectionVariables.set(&quot;agentEmail&quot;, jsonData.user.email);
+    console.log(&quot;Agent saved:&quot;, jsonData.user.id, jsonData.user.phone_number);
+}</pre></details>
+</section><section id="TC08" class="card">
+<h3><span class="m POST">POST</span> TC08 - Create Merchant</h3>
+<p class="url"><code>{{baseUrl}}/user/create</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;name&quot;: &quot;{{randomUsername}}&quot;,
+    &quot;email&quot;: &quot;{{randomEmail}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;,
+    &quot;phone_number&quot;: &quot;{{randomPhone}}&quot;,
+    &quot;nid&quot;: &quot;{{randomNid}}&quot;,
+    &quot;role&quot;: &quot;Merchant&quot;
+}</pre>
+<details><summary>Pre-request script (random user data)</summary><pre>const firstNames = [
+    &quot;Sharif&quot;, &quot;Rahim&quot;, &quot;Karim&quot;, &quot;Sakib&quot;,
+    &quot;Nabil&quot;, &quot;Hasan&quot;, &quot;Imran&quot;, &quot;Rakib&quot;,
+    &quot;Tanvir&quot;, &quot;Fahim&quot;, &quot;Arif&quot;, &quot;Nayeem&quot;,
+    &quot;Sabbir&quot;, &quot;Riyad&quot;, &quot;Faisal&quot;, &quot;Mahin&quot;,
+    &quot;Rafi&quot;, &quot;Adnan&quot;, &quot;Shuvo&quot;, &quot;Tamim&quot;,
+    &quot;Nusrat&quot;, &quot;Ayesha&quot;, &quot;Mim&quot;, &quot;Sumaiya&quot;
+];
+
+// Sequential username counter
+let counter = Number(
+    pm.collectionVariables.get(&quot;userCounter&quot;) || 0
+);
+
+counter++;
+
+pm.collectionVariables.set(&quot;userCounter&quot;, counter);
+
+// Random first name
+const firstName = firstNames[
+    Math.floor(Math.random() * firstNames.length)
+];
+
+// Username and email
+const username = firstName + counter;
+const email = username.toLowerCase() + &quot;@gmail.com&quot;;
+
+// Random phone starting with 018
+const phone = &quot;018&quot; +
+    Math.floor(10000000 + Math.random() * 90000000);
+
+// Sequential NID
+let lastNid = pm.collectionVariables.get(&quot;lastNid&quot;)
+    || &quot;123456789013&quot;;
+
+const nid = (BigInt(lastNid) + 1n).toString();
+
+pm.collectionVariables.set(&quot;lastNid&quot;, nid);
+
+// Set request variables
+pm.variables.set(&quot;randomUsername&quot;, username);
+pm.variables.set(&quot;randomEmail&quot;, email);
+pm.variables.set(&quot;randomPhone&quot;, phone);
+pm.variables.set(&quot;randomNid&quot;, nid);
+
+console.log(&quot;Username:&quot;, username);
+console.log(&quot;Email:&quot;, email);
+console.log(&quot;Phone:&quot;, phone);
+console.log(&quot;NID:&quot;, nid);</pre></details>
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;User created&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User created&quot;);
+});
+pm.test(&quot;Role is Merchant&quot;, function () {
+    pm.expect(jsonData.user.role).to.eql(&quot;Merchant&quot;);
+});
+pm.test(&quot;Phone and email match the request&quot;, function () {
+    pm.expect(jsonData.user.phone_number).to.eql(pm.variables.get(&quot;randomPhone&quot;));
+    pm.expect(jsonData.user.email).to.eql(pm.variables.get(&quot;randomEmail&quot;));
+});
+pm.test(&quot;Password is not returned&quot;, function () {
+    pm.expect(jsonData.user.password).to.be.undefined;
+});
+
+// Save this user&#x27;s data for the next requests
+if (jsonData.user) {
+    pm.collectionVariables.set(&quot;merchantId&quot;, jsonData.user.id);
+    pm.collectionVariables.set(&quot;merchantPhone&quot;, jsonData.user.phone_number);
+    pm.collectionVariables.set(&quot;merchantEmail&quot;, jsonData.user.email);
+    console.log(&quot;Merchant saved:&quot;, jsonData.user.id, jsonData.user.phone_number);
+}</pre></details>
+</section><section id="TC09" class="card">
+<h3><span class="m PATCH">PATCH</span> TC09 - Activate Customer 1</h3>
+<p class="url"><code>{{baseUrl}}/user/update/{{customer1Id}}</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;status&quot;: &quot;active&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Message is &#x27;User updated successfully&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User updated successfully&quot;);
+});
+pm.test(&quot;User status is active&quot;, function () {
+    pm.expect(jsonData.user.status).to.eql(&quot;active&quot;);
+});</pre></details>
+</section><section id="TC10" class="card">
+<h3><span class="m PATCH">PATCH</span> TC10 - Activate Customer 2</h3>
+<p class="url"><code>{{baseUrl}}/user/update/{{customer2Id}}</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;status&quot;: &quot;active&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Message is &#x27;User updated successfully&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User updated successfully&quot;);
+});
+pm.test(&quot;User status is active&quot;, function () {
+    pm.expect(jsonData.user.status).to.eql(&quot;active&quot;);
+});</pre></details>
+</section><section id="TC11" class="card">
+<h3><span class="m PATCH">PATCH</span> TC11 - Activate Agent</h3>
+<p class="url"><code>{{baseUrl}}/user/update/{{agentId}}</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;status&quot;: &quot;active&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Message is &#x27;User updated successfully&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User updated successfully&quot;);
+});
+pm.test(&quot;User status is active&quot;, function () {
+    pm.expect(jsonData.user.status).to.eql(&quot;active&quot;);
+});</pre></details>
+</section><section id="TC12" class="card">
+<h3><span class="m PATCH">PATCH</span> TC12 - Activate Merchant</h3>
+<p class="url"><code>{{baseUrl}}/user/update/{{merchantId}}</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{adminAccessToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;status&quot;: &quot;active&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Message is &#x27;User updated successfully&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;User updated successfully&quot;);
+});
+pm.test(&quot;User status is active&quot;, function () {
+    pm.expect(jsonData.user.status).to.eql(&quot;active&quot;);
+});</pre></details>
+</section><section id="TC13" class="card">
+<h3><span class="m POST">POST</span> TC13 - System account login</h3>
+<p class="url"><code>{{baseUrl}}/user/login</code></p>
+<p>SYSTEM account gets a token directly (no OTP).</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;email&quot;: &quot;{{systemEmail}}&quot;,
+    &quot;password&quot;: &quot;{{systemPassword}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Login successful and token exists&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Login successful&quot;);
+    pm.expect(jsonData.token).to.exist;
+});
+
+if (jsonData.token) {
+    pm.collectionVariables.set(&quot;systemToken&quot;, jsonData.token);
+}</pre></details>
+</section><section id="TC14" class="card">
+<h3><span class="m POST">POST</span> TC14 - Agent login (OTP sent)</h3>
+<p class="url"><code>{{baseUrl}}/user/login</code></p>
+<p>Customer/Agent/Merchant do not get a token here. The server sends a 4-digit OTP.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;phone_number&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;OTP is required&quot;, function () {
+    pm.expect(jsonData.otpRequired).to.eql(true);
+    pm.expect(jsonData.message).to.eql(&quot;OTP sent to your registered email address&quot;);
+});</pre></details>
+</section><section id="TC15" class="card">
+<h3><span class="m POST">POST</span> TC15 - Agent verify with wrong OTP (negative)</h3>
+<p class="url"><code>{{baseUrl}}/user/verify-otp</code></p>
+<p>Negative: real OTPs are 1000-9999, so &#x27;0000&#x27; without ?env=dev is always wrong.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;identifier&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;otp&quot;: &quot;0000&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 401&quot;, function () {
+    pm.response.to.have.status(401);
+});
+pm.test(&quot;Message is &#x27;Invalid OTP. Please try again.&#x27;&quot;, function () {
+    pm.expect(pm.response.json().message).to.eql(&quot;Invalid OTP. Please try again.&quot;);
+});</pre></details>
+</section><section id="TC16" class="card">
+<h3><span class="m POST">POST</span> TC16 - Agent verify OTP</h3>
+<p class="url"><code>{{baseUrl}}/user/verify-otp?env=dev</code></p>
+<p>Uses the server&#x27;s dev OTP bypass (?env=dev + DEFAULT_OTP from the server .env), so Newman can run without typing OTPs.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;identifier&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;otp&quot;: &quot;{{defaultOtp}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Login successful with role Agent&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Login successful&quot;);
+    pm.expect(jsonData.role).to.eql(&quot;Agent&quot;);
+    pm.expect(jsonData.token).to.exist;
+});
+
+if (jsonData.token) {
+    pm.collectionVariables.set(&quot;agentToken&quot;, jsonData.token);
+}</pre></details>
+</section><section id="TC17" class="card">
+<h3><span class="m POST">POST</span> TC17 - Customer 1 login (OTP sent)</h3>
+<p class="url"><code>{{baseUrl}}/user/login</code></p>
+<p>Customer/Agent/Merchant do not get a token here. The server sends a 4-digit OTP.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;phone_number&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;OTP is required&quot;, function () {
+    pm.expect(jsonData.otpRequired).to.eql(true);
+    pm.expect(jsonData.message).to.eql(&quot;OTP sent to your registered email address&quot;);
+});</pre></details>
+</section><section id="TC18" class="card">
+<h3><span class="m POST">POST</span> TC18 - Customer 1 verify OTP</h3>
+<p class="url"><code>{{baseUrl}}/user/verify-otp?env=dev</code></p>
+<p>Uses the server&#x27;s dev OTP bypass (?env=dev + DEFAULT_OTP from the server .env), so Newman can run without typing OTPs.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;identifier&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;otp&quot;: &quot;{{defaultOtp}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Login successful with role Customer&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Login successful&quot;);
+    pm.expect(jsonData.role).to.eql(&quot;Customer&quot;);
+    pm.expect(jsonData.token).to.exist;
+});
+
+if (jsonData.token) {
+    pm.collectionVariables.set(&quot;customer1Token&quot;, jsonData.token);
+}</pre></details>
+</section><section id="TC19" class="card">
+<h3><span class="m POST">POST</span> TC19 - Customer 2 login (OTP sent)</h3>
+<p class="url"><code>{{baseUrl}}/user/login</code></p>
+<p>Customer/Agent/Merchant do not get a token here. The server sends a 4-digit OTP.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;phone_number&quot;: &quot;{{customer2Phone}}&quot;,
+    &quot;password&quot;: &quot;{{userPassword}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;OTP is required&quot;, function () {
+    pm.expect(jsonData.otpRequired).to.eql(true);
+    pm.expect(jsonData.message).to.eql(&quot;OTP sent to your registered email address&quot;);
+});</pre></details>
+</section><section id="TC20" class="card">
+<h3><span class="m POST">POST</span> TC20 - Customer 2 verify OTP</h3>
+<p class="url"><code>{{baseUrl}}/user/verify-otp?env=dev</code></p>
+<p>Uses the server&#x27;s dev OTP bypass (?env=dev + DEFAULT_OTP from the server .env), so Newman can run without typing OTPs.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;identifier&quot;: &quot;{{customer2Phone}}&quot;,
+    &quot;otp&quot;: &quot;{{defaultOtp}}&quot;
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 200&quot;, function () {
+    pm.response.to.have.status(200);
+});
+pm.test(&quot;Login successful with role Customer&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Login successful&quot;);
+    pm.expect(jsonData.role).to.eql(&quot;Customer&quot;);
+    pm.expect(jsonData.token).to.exist;
+});
+
+if (jsonData.token) {
+    pm.collectionVariables.set(&quot;customer2Token&quot;, jsonData.token);
+}</pre></details>
+</section><section id="TC21" class="card">
+<h3><span class="m POST">POST</span> TC21 - System deposit to a Customer (negative)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/deposit</code></p>
+<p>Negative: SYSTEM may only fund Agent accounts.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{systemToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;SYSTEM&quot;,
+    &quot;to_account&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;amount&quot;: 10
+}</pre>
+
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 400&quot;, function () {
+    pm.response.to.have.status(400);
+});
+pm.test(&quot;Error message is correct&quot;, function () {
+    pm.expect(pm.response.json().message).to.eql(&quot;SYSTEM account can only deposit to a regular Agent account. Customer and Merchant accounts are not allowed.&quot;);
+});
+pm.test(&quot;No transaction id is returned&quot;, function () {
+    pm.expect(pm.response.json().trnxId).to.be.undefined;
+});</pre></details>
+</section><section id="TC22" class="card">
+<h3><span class="m POST">POST</span> TC22 - System deposits 5000 tk to Agent</h3>
+<p class="url"><code>{{baseUrl}}/transaction/deposit</code></p>
+
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{systemToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;SYSTEM&quot;,
+    &quot;to_account&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;amount&quot;: 5000
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;SYSTEM deposit to Agent successful&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;SYSTEM deposit to Agent successful&quot;);
+});
+pm.test(&quot;Amount is 5000 and agent balance is 5000&quot;, function () {
+    pm.expect(jsonData.amount).to.eql(5000);
+    pm.expect(Number(jsonData.agentBalance)).to.eql(5000);
+});
+pm.test(&quot;Transaction id exists&quot;, function () {
+    pm.expect(jsonData.trnxId).to.exist;
+});</pre></details>
+</section><section id="TC23" class="card">
+<h3><span class="m POST">POST</span> TC23 - Agent deposit below minimum amount (negative)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/deposit</code></p>
+<p>Negative: 5 tk is below the 10 tk minimum.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{agentToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;to_account&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;amount&quot;: 5
+}</pre>
+
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 400&quot;, function () {
+    pm.response.to.have.status(400);
+});
+pm.test(&quot;Error message is correct&quot;, function () {
+    pm.expect(pm.response.json().message).to.include(&quot;Minimum deposit amount is 10 tk&quot;);
+});
+pm.test(&quot;No transaction id is returned&quot;, function () {
+    pm.expect(pm.response.json().trnxId).to.be.undefined;
+});</pre></details>
+</section><section id="TC24" class="card">
+<h3><span class="m POST">POST</span> TC24 - Agent deposits 2000 tk to Customer 1 (assert commission)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/deposit</code></p>
+<p>Agent commission = 2.5% of amount. 2000 x 0.025 = 50 tk.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{agentToken}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;to_account&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;amount&quot;: 2000
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+const amount = 2000;
+const expectedCommission = amount * 0.025;   // 2.5% agent commission = 50
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;Deposit successful&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Deposit successful&quot;);
+});
+pm.test(&quot;Deposit commission is 2.5% (50 tk)&quot;, function () {
+    pm.expect(jsonData.commission).to.eql(expectedCommission);
+});
+pm.test(&quot;Agent balance = 5000 - 2000 + 50 = 3050&quot;, function () {
+    pm.expect(jsonData.currentBalance).to.eql(5000 - amount + expectedCommission);
+});</pre></details>
+</section><section id="TC25" class="card">
+<h3><span class="m POST">POST</span> TC25 - Customer sends money to own account (negative)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/sendmoney</code></p>
+<p>Negative: sender and receiver are the same.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{customer1Token}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;to_account&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;amount&quot;: 10
+}</pre>
+
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 400&quot;, function () {
+    pm.response.to.have.status(400);
+});
+pm.test(&quot;Error message is correct&quot;, function () {
+    pm.expect(pm.response.json().message).to.eql(&quot;From account and to account cannot be the same&quot;);
+});
+pm.test(&quot;No transaction id is returned&quot;, function () {
+    pm.expect(pm.response.json().trnxId).to.be.undefined;
+});</pre></details>
+</section><section id="TC26" class="card">
+<h3><span class="m POST">POST</span> TC26 - Customer 1 sends 1000 tk to Customer 2 (assert fee)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/sendmoney</code></p>
+<p>Send money fee is a flat 5 tk.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{customer1Token}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;to_account&quot;: &quot;{{customer2Phone}}&quot;,
+    &quot;amount&quot;: 1000
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+const amount = 1000;
+const expectedFee = 5;   // flat 5 tk send money fee
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;Send money successful&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Send money successful&quot;);
+});
+pm.test(&quot;Service fee is 5 tk&quot;, function () {
+    pm.expect(jsonData.fee).to.eql(expectedFee);
+});
+pm.test(&quot;Customer 1 balance = 2000 - 1000 - 5 = 995&quot;, function () {
+    pm.expect(jsonData.currentBalance).to.eql(2000 - amount - expectedFee);
+});</pre></details>
+</section><section id="TC27" class="card">
+<h3><span class="m POST">POST</span> TC27 - Customer cash out below minimum amount (negative)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/withdraw</code></p>
+<p>Negative: 5 tk is below the 10 tk minimum.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{customer2Token}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{customer2Phone}}&quot;,
+    &quot;to_account&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;amount&quot;: 5
+}</pre>
+
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 400&quot;, function () {
+    pm.response.to.have.status(400);
+});
+pm.test(&quot;Error message is correct&quot;, function () {
+    pm.expect(pm.response.json().message).to.eql(&quot;Minimum withdraw amount is 10 tk&quot;);
+});
+pm.test(&quot;No transaction id is returned&quot;, function () {
+    pm.expect(pm.response.json().trnxId).to.be.undefined;
+});</pre></details>
+</section><section id="TC28" class="card">
+<h3><span class="m POST">POST</span> TC28 - Customer 2 cashes out 500 tk from Agent (assert fee)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/withdraw</code></p>
+<p>Cash out fee = 1% of amount, minimum 5 tk. 500 x 0.01 = 5 tk.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{customer2Token}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{customer2Phone}}&quot;,
+    &quot;to_account&quot;: &quot;{{agentPhone}}&quot;,
+    &quot;amount&quot;: 500
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+const amount = 500;
+const expectedFee = Math.max(amount * 0.01, 5);   // 1%, minimum 5 tk = 5
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;Withdraw successful&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Withdraw successful&quot;);
+});
+pm.test(&quot;Service fee is 1% with 5 tk minimum (5 tk)&quot;, function () {
+    pm.expect(jsonData.fee).to.eql(expectedFee);
+});
+pm.test(&quot;Customer 2 balance = 1000 - 500 - 5 = 495&quot;, function () {
+    pm.expect(jsonData.currentBalance).to.eql(1000 - amount - expectedFee);
+});</pre></details>
+</section><section id="TC29" class="card">
+<h3><span class="m POST">POST</span> TC29 - Customer pays to a non-merchant account (negative)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/payment</code></p>
+<p>Negative: payment receiver must be a Merchant.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{customer2Token}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{customer2Phone}}&quot;,
+    &quot;to_account&quot;: &quot;{{customer1Phone}}&quot;,
+    &quot;amount&quot;: 10
+}</pre>
+
+<details open><summary>Tests</summary><pre>pm.test(&quot;Status code is 400&quot;, function () {
+    pm.response.to.have.status(400);
+});
+pm.test(&quot;Error message is correct&quot;, function () {
+    pm.expect(pm.response.json().message).to.eql(&quot;From A/C should be customer or agent and To A/C should be merchant type&quot;);
+});
+pm.test(&quot;No transaction id is returned&quot;, function () {
+    pm.expect(pm.response.json().trnxId).to.be.undefined;
+});</pre></details>
+</section><section id="TC30" class="card">
+<h3><span class="m POST">POST</span> TC30 - Customer 2 pays 400 tk to Merchant (assert fee)</h3>
+<p class="url"><code>{{baseUrl}}/transaction/payment</code></p>
+<p>Payment fee = 1% of amount, minimum 5 tk. 400 x 0.01 = 4, so the minimum 5 tk applies.</p>
+<h4>Headers</h4><table><tr><td>Content-Type</td><td><code>application/json</code></td></tr><tr><td>Authorization</td><td><code>Bearer {{customer2Token}}</code></td></tr><tr><td>X-AUTH-SECRET-KEY</td><td><code>{{partnerKey}}</code></td></tr></table>
+<h4>Body</h4><pre>{
+    &quot;from_account&quot;: &quot;{{customer2Phone}}&quot;,
+    &quot;to_account&quot;: &quot;{{merchantPhone}}&quot;,
+    &quot;amount&quot;: 400
+}</pre>
+
+<details open><summary>Tests</summary><pre>const jsonData = pm.response.json();
+const amount = 400;
+const expectedFee = Math.max(amount * 0.01, 5);   // 1% = 4, minimum 5 tk applies
+
+pm.test(&quot;Status code is 201&quot;, function () {
+    pm.response.to.have.status(201);
+});
+pm.test(&quot;Message is &#x27;Payment successful&#x27;&quot;, function () {
+    pm.expect(jsonData.message).to.eql(&quot;Payment successful&quot;);
+});
+pm.test(&quot;Service fee is 5 tk (minimum fee)&quot;, function () {
+    pm.expect(jsonData.fee).to.eql(expectedFee);
+});
+pm.test(&quot;Customer 2 balance = 495 - 400 - 5 = 90&quot;, function () {
+    pm.expect(jsonData.currentBalance).to.eql(495 - amount - expectedFee);
+});</pre></details>
+</section>
+</main></div></body></html>
